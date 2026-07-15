@@ -1,12 +1,7 @@
 from datetime import datetime
 from airflow import DAG
-from airflow.models import Connection
-from airflow.providers.standard.operators.bash import BashOperator
-from airflow.sdk import BaseOperator
 from airflow.sdk.bases.hook import BaseHook
-
-
-
+from plugins.dag3_operator import ExampleOperator
 
 
 connection= BaseHook.get_connection('main_postgresql_connection')
@@ -19,27 +14,26 @@ default_args = {
 }
 
 
-
-
 with DAG(
-    'example_simple_dag',
+    'dag3',
     default_args=default_args,
     description='Простой пример DAG с Bash и Python операторами',
     schedule='0 * * * *',  # Запуск раз в час
-    # start_date=datetime(2026, 7, 6),
+    # start_date=datetime(2026, 7, 15),
     catchup=False
-
 ) as dag:
 
     # 3. Определение задач (Tasks)
-    t1 = BashOperator(
+    t1 = ExampleOperator(
             task_id='task1',
-            bash_command='python3 /home/ubuntuuser/airflow/scripts/dag2/task1.py ' +f'--host {connection.host} --dbname {connection.schema} --user {connection.login} --jdbc_password {connection.password} --port {connection.port}',
+            postgres_conn=connection,
+            curr={'EUR'},
             dag=dag)
 
-    t2 = BashOperator(
+    t2 = ExampleOperator(
             task_id='task2',
-            bash_command='python3 /home/ubuntuuser/airflow/scripts/dag2/task2.py --date {{ ds }} ' +f'--host {connection.host} --dbname {connection.schema} --user {connection.login} --jdbc_password {connection.password} --port {connection.port}',
+            postgres_conn=connection,
+            curr={'RUB'},
             dag=dag)
 
     # 4. Установка зависимостей (Порядок выполнения)
