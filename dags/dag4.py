@@ -42,9 +42,9 @@ with DAG(
         bash_command='python3 /home/ubuntuuser/airflow/scripts/dag1/task3.py',
         dag=dag)
 
-    for i in (4,5,6,7):
+    for i in (1,2,3,4):
         some_task=BashOperator(
-        task_id=f'task{str(i)}',
+        task_id=f'task4_{str(i)}',
         bash_command='python3 /home/ubuntuuser/airflow/scripts/dag1/task2.py' +f'--host {connection.host} --dbname {connection.schema} --user {connection.login} --jdbc_password {connection.password} --port {connection.port}',
         dag=dag)
         t3 >> some_task
